@@ -1,0 +1,39 @@
+function getId(id) {
+  return document.getElementById(id);
+}
+
+let firstCurrency = getId("first-currency");
+let secondCurrency = getId("second-currency");
+let selectedCurrency = getId("selected-currency");
+let convertCurrency = getId("convert-currency");
+let exchangeCurrency = getId("exchange-currency");
+
+function currencyUpdate() {
+  let url = fetch(
+    `https://open.er-api.com/v6/latest/${selectedCurrency.value}`,
+  );
+
+  //   console.log(url);
+
+
+  let data = url.then((res) => res.json());
+  data
+    .then((currency) => {
+      const rate = currency.rates[convertCurrency.value];
+
+      exchangeCurrency.innerText = `1 ${selectedCurrency.value} = ${rate} ${convertCurrency.value}`;
+
+      if (firstCurrency.value) {
+        secondCurrency.value = (firstCurrency.value * rate).toFixed(2);
+      }
+    })
+    .catch((err) => {
+      exchangeCurrency.innerText = "Unable to exchange Currency";
+    });
+}
+
+selectedCurrency.addEventListener("change", currencyUpdate);
+convertCurrency.addEventListener("change", currencyUpdate);
+firstCurrency.addEventListener("input", currencyUpdate);
+
+currencyUpdate();
